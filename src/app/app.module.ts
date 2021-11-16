@@ -10,6 +10,7 @@ import { ButtonComponent } from './components/button/button.component';
 import { DatePickerComponent } from './components/date-picker/date-picker.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -25,7 +26,9 @@ import {MatFormFieldModule} from '@angular/material/form-field';
     NoopAnimationsModule,
     MatNativeDateModule,
     MatDatepickerModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
