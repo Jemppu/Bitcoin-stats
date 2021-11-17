@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 
 @Component({
   selector: 'app-header',
@@ -9,11 +10,12 @@ export class HeaderComponent implements OnInit {
 
   title: string = 'Scrooges Bitcoin calculator';
 
-  constructor() { }
+  constructor(private analyticsService: AnalyticsService) { }
 
   ngOnInit(): void {}
 
   searchTimePeriod(){
+    this.analyticsService.analyzeDates()
     console.log("app-date-picker")
   }
 }

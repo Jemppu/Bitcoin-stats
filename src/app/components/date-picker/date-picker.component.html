@@ -1,6 +1,6 @@
 <h5>select date</h5>
 
-<form [formGroup]='Form'>
+<form [formGroup]='form'>
     <mat-form-field appearance="fill">
         <mat-date-range-input [rangePicker]="picker" [min] = 'minDate' [max] = 'maxDate' formGroupName = 'daterange'>
           <input matStartDate placeholder="Start date" formControlName='start'>

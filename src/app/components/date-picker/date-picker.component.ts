@@ -10,7 +10,7 @@ import { Component, OnInit, Output, EventEmitter, ChangeDetectionStrategy } from
 })
 export class DatePickerComponent implements OnInit {
 
-  Form: FormGroup;
+  form: FormGroup;
 
   minDate = new Date(2013, 3, 17);
   maxDate = new Date();
@@ -21,7 +21,7 @@ export class DatePickerComponent implements OnInit {
   constructor(private fb: FormBuilder ) { }
 
   ngOnInit(): void {
-    this.Form = this.fb.group({
+    this.form = this.fb.group({
       daterange: new FormGroup({
         start: new FormControl,
         end: new FormControl
@@ -30,7 +30,7 @@ export class DatePickerComponent implements OnInit {
   }
 
   onClick(){
-    console.log(this.Form.value);
+    this.btnClick.emit(this.form.value);
   }
 
 
