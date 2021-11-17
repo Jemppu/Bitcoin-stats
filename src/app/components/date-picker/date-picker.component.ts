@@ -30,7 +30,7 @@ export class DatePickerComponent implements OnInit {
   }
 
   onClick(){
-    var times = [this.form.controls['daterange'].value['start'].getTime()/1000+3600, this.form.controls['daterange'].value['end'].getTime()/1000+3600];
+    var times = [this.form.controls['daterange'].value['start'], this.form.controls['daterange'].value['end']];
     this.btnClick.emit(times);
   }
 

@@ -26,29 +26,18 @@ export class AnalyticsService {
   longestBearish(prices = []){
     var longest = 0;
     var current = 0;
-    var decreased = false;
-    var startTime = 0;
-    var endTime = 0;
     for (let i = 1; i < prices.length; i++){
       if (prices[i][1] < prices[i - 1][1]){
         current += 1;
         if ( current > longest){
-            decreased = true;
             longest = current;
-            endTime = prices[i][0];
-            startTime = prices[i-current][0];
         }
       }
       else{
         current = 0;
       }
     }
-    if (decreased){
-      return [new Date(startTime), new Date(endTime)];
-    }
-    else{
-      return [];
-    }
+    return longest;
   }
 
   highestVolume(volume = []){
@@ -60,14 +49,14 @@ export class AnalyticsService {
         highestTime = volume[i][0];
       }
     }
-    return [new Date(highestTime), highest]
+    return [highestTime.toString(), highest.toString()]
   }
 
   maximumProfit(prices = []){
     var lowestTime = prices[0][0];
     var lowestPrice = prices[0][1];
-    var differenceStartTime = prices[0][0];
-    var differenceEndTime = prices[0][0];
+    var differenceStartTime = 0
+    var differenceEndTime = 0;
     var differenceAmount = 0;
     for (let i = 1; i < prices.length; i++){
       if(prices[i][1] - lowestPrice > differenceAmount){
@@ -83,20 +72,21 @@ export class AnalyticsService {
     if(differenceStartTime == differenceEndTime){
       return [];
     }
+    differenceStartTime.toString();
     return [new Date(differenceStartTime), new Date(differenceEndTime)];
   } 
 
   analyzeDates(times = []){
     let url = 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=' + times[0] + '&to=' + times[1];
     var json = this.getJson(url);
-    let bearishDates = [];
     let highVolume = [];
     let profitDates = [];
-    bearishDates = this.longestBearish(json.prices);
+    let longestDecrease = this.longestBearish(json.prices);
     highVolume = this.highestVolume(json.total_volumes);
     profitDates = this.maximumProfit(json.prices);
-    console.log(bearishDates)
+    console.log(longestDecrease)
     console.log(highVolume)
     console.log(profitDates)
+    return [longestDecrease, highVolume, profitDates]
   }
 }
