@@ -86,21 +86,17 @@ export class AnalyticsService {
     return [new Date(differenceStartTime), new Date(differenceEndTime)];
   } 
 
-  analyzeDates(){
-    let dates = [new Date ('2020.01.01'), new Date ('2021.01.01')];
-    let datesUnix = this.datesToUnix(dates);
-    let url = 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=' + datesUnix[0] + '&to=' + datesUnix[1];
+  analyzeDates(times = []){
+    let url = 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=' + times[0] + '&to=' + times[1];
     var json = this.getJson(url);
     let bearishDates = [];
-    bearishDates = this.longestBearish(json.prices);
     let highVolume = [];
-    highVolume = this.highestVolume(json.total_volumes);
     let profitDates = [];
+    bearishDates = this.longestBearish(json.prices);
+    highVolume = this.highestVolume(json.total_volumes);
     profitDates = this.maximumProfit(json.prices);
-    console.log(profitDates);
-  }
-
-  getAnalytics() {
-    return 'success'
+    console.log(bearishDates)
+    console.log(highVolume)
+    console.log(profitDates)
   }
 }

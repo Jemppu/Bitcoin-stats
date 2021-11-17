@@ -14,8 +14,7 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  searchTimePeriod(){
-    this.analyticsService.analyzeDates()
-    console.log("app-date-picker")
+  searchTimePeriod(times = []){
+    this.analyticsService.analyzeDates(times)
   }
 }
