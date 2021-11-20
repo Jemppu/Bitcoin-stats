@@ -1,19 +1,16 @@
 <h5>select date</h5>
 
 <form [formGroup]='form'>
-    <mat-form-field appearance="fill">
-        <mat-date-range-input [rangePicker]="picker" [min] = 'minDate' [max] = 'maxDate' formGroupName = 'daterange'>
-          <input matStartDate placeholder="Start date" formControlName='start'>
-          <input matEndDate placeholder="End date" formControlName='end'>
-        </mat-date-range-input>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-      </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-date-range-input [rangePicker]="picker" [min]='minDate' [max]='maxDate' formGroupName='daterange'>
+      <input matStartDate placeholder="Start date" formControlName='start'>
+      <input matEndDate placeholder="End date" formControlName='end'>
+    </mat-date-range-input>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+  </mat-form-field>
 
-      <button [ngStyle]="{'background-color': 'blue'}" 
-        class = 'btn'
-        (click)="onClick()"
-        >search
-    </button>
+  <button [ngStyle]="{'background-color': 'blue'}" class='btn' (click)="onClick()">search
+  </button>
 
 </form>

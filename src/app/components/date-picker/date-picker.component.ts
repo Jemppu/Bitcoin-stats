@@ -18,7 +18,7 @@ export class DatePickerComponent implements OnInit {
   cssClass = '/date-picker.component.css'
   buttonColor: 'Blue';
 
-  constructor(private fb: FormBuilder ) { }
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -29,7 +29,7 @@ export class DatePickerComponent implements OnInit {
     });
   }
 
-  onClick(){
+  onClick() {
     var times = [this.form.controls['daterange'].value['start'], this.form.controls['daterange'].value['end']];
     this.btnClick.emit(times);
   }
