@@ -20,14 +20,17 @@ export class AnalyticsService {
   highestVolumeTime: String;
   profitDateStart: String;
   profitDateEnd: String;
+  prices: Array<Array<number>>;
+  total_volumes: Array<Array<number>>;
 
   constructor() { }
 
   datesToUnix(dates: Array<Date>) {
     let datesUnix = [];
     for (var date of dates) {
-      datesUnix.push(date.getTime() / 1000 + 7200);
+      datesUnix.push(date.getTime() / 1000);
     }
+    datesUnix[1] += 10800;
     return datesUnix
   }
 
@@ -37,8 +40,8 @@ export class AnalyticsService {
   }
 
   longestBearish(prices: Array<Array<number>>) {
-    var decrease = 0;
-    var current = 0;
+    let decrease: number = 0;
+    let current: number = 0;
     for (let i = 1; i < prices.length; i++) {
       if (prices[i][1] < prices[i - 1][1]) {
         current += 1;
@@ -55,12 +58,11 @@ export class AnalyticsService {
 
   highestVolume(volumes: Array<Array<number>>) {
     let highVolumeTime: number = 0;
-    let highestVolumeNumber : number = 0;
-    for (let i = 0; i < volumes.length; i++) {
-      if (volumes[i][1] > highestVolumeNumber) {
-        highestVolumeNumber = volumes[i][1];
-        highVolumeTime = volumes[i][0];
-      }
+    let highestVolumeNumber: number = 0;
+    highestVolumeNumber = Math.max.apply(Math, volumes.map(function (o) { return o[1]; }))
+    var arr = volumes.find(function (o) { return o[1] == highestVolumeNumber; })
+    if (arr) {
+      highVolumeTime = arr[0]
     }
     this.highestVolumeString = highestVolumeNumber.toString();
     let highVolumeDate = new Date(highVolumeTime)
@@ -68,11 +70,11 @@ export class AnalyticsService {
   }
 
   maximumProfit(prices: Array<Array<number>>) {
-    var lowestTime = prices[0][0];
-    var lowestPrice = prices[0][1];
-    var differenceStartTime = 0
-    var differenceEndTime = 0;
-    var differenceAmount = 0;
+    let lowestTime: number = prices[0][0];
+    let lowestPrice: number = prices[0][1];
+    let differenceStartTime: number = 0
+    let differenceEndTime: number = 0;
+    let differenceAmount: number = 0;
     for (let i = 1; i < prices.length; i++) {
       if (prices[i][1] - lowestPrice > differenceAmount) {
         differenceAmount = prices[i][1] - lowestPrice;
@@ -97,11 +99,24 @@ export class AnalyticsService {
     let datesUnix: Array<number> = this.datesToUnix(dates);
     await this.getJson(datesUnix)
       .then(response => response.json())
-      .then(data => this.json = data);
-    this.longestBearish(this.json.prices);
-    this.highestVolume(this.json.total_volumes);
-    this.maximumProfit(this.json.prices);
+      .then(data => this.json = data)
+    //api gives results for every hour when query is shorter than 90 days, picking data for once per day
+    if (datesUnix[1] - datesUnix[0] < 7776000) {
+      this.prices = Array(this.json.prices[0])
+      this.total_volumes = Array(this.json.total_volumes[0])
+      for (let i = 24; i < this.json.prices.length; i += 24) {
+        this.prices.push(this.json.prices[i])
+        this.total_volumes.push(this.json.total_volumes[i])
+      }
+    }
+    else {
+      this.prices = this.json.prices;
+      this.total_volumes = this.json.total_volumes;
+    }
+    this.longestBearish(this.prices);
+    this.highestVolume(this.total_volumes);
+    this.maximumProfit(this.prices);
+
     return [this.longestDecrease, this.highestVolumeString, this.highestVolumeTime, this.profitDateStart, this.profitDateEnd];
   }
 }
-
