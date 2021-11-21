@@ -2,7 +2,17 @@
     <h1>{{title}}</h1>
 </header>
 <app-date-picker (btnClick)="searchTimePeriod($event)"></app-date-picker>
-<h5>In bitcoin’s historical data from CoinGecko, the price decreased {{this.longestBearish}} days in a row for the inputs from {{this.formattedStartTime}} and to {{this.formattedEndTime}}
+<h5 *ngIf="showText">In bitcoin’s historical data from CoinGecko, the price decreased {{this.longestBearish}} days in a
+    row for the inputs from {{this.formattedStartTime}} and to {{this.formattedEndTime}}
     and highest volume was {{this.highestVolume}}€ on {{this.formattedVolumeTime}}.
-    For maximum profit during selected time period, Scrooge should buy bitcoin on {{this.formattedMaxProfitStart}} and sell on {{this.formattedMaxProfitEnd}}
+    <div *ngIf="profitToBeMade">
+        For maximum profit during selected time period, Scrooge should buy bitcoin on {{this.formattedMaxProfitStart}}
+        and sell on {{this.formattedMaxProfitEnd}}
+    </div>
+    <div *ngIf="profitNotToBeMade">
+        Profit cannot me made during these days.
+    </div>
+</h5>
+<h5 *ngIf="error">
+    There was a problem while loading data.
 </h5>
