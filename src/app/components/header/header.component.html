@@ -2,7 +2,8 @@
     <h1>{{title}}</h1>
 </header>
 <app-date-picker (btnClick)="searchTimePeriod($event)"></app-date-picker>
-<h5 *ngIf="showText">In bitcoin’s historical data from CoinGecko, the price decreased {{this.longestBearish}} days in a
+<h5 *ngIf="showText">
+    In bitcoin’s historical data from CoinGecko, the price decreased {{this.longestBearish}} days in a
     row for the inputs from {{this.formattedStartTime}} and to {{this.formattedEndTime}}
     and highest volume was {{this.highestVolume}}€ on {{this.formattedVolumeTime}}.
     <div *ngIf="profitToBeMade">
