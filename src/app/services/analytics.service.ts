@@ -16,10 +16,8 @@ export class AnalyticsService {
 
   json: MarketChart;
   longestDecrease: String = "";
-  highestVolumeString: String = "";
-  highestVolumeTime: String = "";
-  profitDateStart: String = "";
-  profitDateEnd: String = "";
+  highestVolumeData: Array<String> = ["",""];
+  profitDates: Array<String> = ["",""];
   prices: Array<Array<number>>;
   total_volumes: Array<Array<number>>;
 
@@ -34,12 +32,14 @@ export class AnalyticsService {
     datesUnix[1] += 10800;
     return datesUnix
   }
-
+ 
+  //fetch the json from api for given dates
   getJson = async (datesUnix: Array<number>) => {
     let url: string = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=${datesUnix[0]}&to=${datesUnix[1]}`;
     return await window.fetch(url)
   }
 
+  //method that returns the length of the longest bearish streak of the given dates
   longestBearish(prices: Array<Array<number>>) {
     let decrease: number = 0;
     let current: number = 0;
@@ -54,9 +54,10 @@ export class AnalyticsService {
         current = 0;
       }
     }
-    this.longestDecrease = decrease.toString();
+    return decrease.toString();
   }
 
+  //method that returns highest volume and date of given dates as string.
   highestVolume(volumes: Array<Array<number>>) {
     let highVolumeTime: number = 0;
     let highestVolumeNumber: number = 0;
@@ -65,11 +66,11 @@ export class AnalyticsService {
     if (arr) {
       highVolumeTime = arr[0]
     }
-    this.highestVolumeString = highestVolumeNumber.toString();
     let highVolumeDate = new Date(highVolumeTime)
-    this.highestVolumeTime = `${highVolumeDate.getFullYear()}-${highVolumeDate.getMonth() + 1}-${highVolumeDate.getDate()}`;
+    return [highestVolumeNumber.toFixed(2).toString(), `${highVolumeDate.getFullYear()}-${highVolumeDate.getMonth() + 1}-${highVolumeDate.getDate()}`];
   }
 
+  //method that calculates and returns day range for best profit days, returns array with empty strings if there are no days to profit from.
   maximumProfit(prices: Array<Array<number>>) {
     let lowestTime: number = prices[0][0];
     let lowestPrice: number = prices[0][1];
@@ -87,26 +88,29 @@ export class AnalyticsService {
         lowestTime = prices[i][0];
       }
     }
+    //catching if profit cannot be made, returning array with empty strings
     if (differenceStartTime == differenceEndTime) {
-      this.profitDateStart = "";
-      this.profitDateEnd = "";
+      return ["",""]
     }
     else {
       let diffStartDate = new Date(differenceStartTime)
       let diffEndDate = new Date(differenceEndTime)
-      this.profitDateStart = `${diffStartDate.getFullYear()}-${diffStartDate.getMonth() + 1}-${diffStartDate.getDate()}`;
-      this.profitDateEnd = `${diffEndDate.getFullYear()}-${diffEndDate.getMonth() + 1}-${diffEndDate.getDate()}`;
+      return [`${diffStartDate.getFullYear()}-${diffStartDate.getMonth() + 1}-${diffStartDate.getDate()}`, `${diffEndDate.getFullYear()}-${diffEndDate.getMonth() + 1}-${diffEndDate.getDate()}`];
     }
   }
 
+  //method calls other methods of this service to find requested info from the dates. Returns array of strings of the requested info.
   analyzeDates = async (dates: Array<Date>) => {
+
     let datesUnix: Array<number> = this.datesToUnix(dates);
+
     await this.getJson(datesUnix)
       .then(response => response.json())
       .then(data => this.json = data)
       .catch((error) => {
         console.error('Error:', error)
       });
+      
     //api gives results for every hour when query is shorter than 90 days, picking data for once per day
     if (this.json) {
       if (datesUnix[1] - datesUnix[0] < 7776000) {
@@ -117,18 +121,20 @@ export class AnalyticsService {
           this.total_volumes.push(this.json.total_volumes[i])
         }
       }
+      //if time was longer than 90 days, uses data that was fetched without modifying it
       else {
         this.prices = this.json.prices;
         this.total_volumes = this.json.total_volumes;
       }
-      this.longestBearish(this.prices);
-      this.highestVolume(this.total_volumes);
-      this.maximumProfit(this.prices);
+      this.longestDecrease = this.longestBearish(this.prices);
+      this.highestVolumeData = this.highestVolume(this.total_volumes);
+      this.profitDates = this.maximumProfit(this.prices);
     }
-    else{ 
+    //no json found, so there was something wrong in fetching. Sets first string in return to show there was an error.
+    else {
       this.longestDecrease = "data not found"
     }
-    return [this.longestDecrease, this.highestVolumeString, this.highestVolumeTime, this.profitDateStart, this.profitDateEnd];
+    return [this.longestDecrease, this.highestVolumeData[0], this.highestVolumeData[1], this.profitDates[0], this.profitDates[1]];
 
   }
 }
