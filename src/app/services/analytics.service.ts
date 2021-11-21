@@ -16,8 +16,8 @@ export class AnalyticsService {
 
   json: MarketChart;
   longestDecrease: String = "";
-  highestVolumeData: Array<String> = ["",""];
-  profitDates: Array<String> = ["",""];
+  highestVolumeData: Array<String> = ["", ""];
+  profitDates: Array<String> = ["", ""];
   prices: Array<Array<number>>;
   total_volumes: Array<Array<number>>;
 
@@ -32,7 +32,7 @@ export class AnalyticsService {
     datesUnix[1] += 10800;
     return datesUnix
   }
- 
+
   //fetch the json from api for given dates
   getJson = async (datesUnix: Array<number>) => {
     let url: string = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=${datesUnix[0]}&to=${datesUnix[1]}`;
@@ -90,7 +90,7 @@ export class AnalyticsService {
     }
     //catching if profit cannot be made, returning array with empty strings
     if (differenceStartTime == differenceEndTime) {
-      return ["",""]
+      return ["", ""]
     }
     else {
       let diffStartDate = new Date(differenceStartTime)
@@ -110,10 +110,10 @@ export class AnalyticsService {
       .catch((error) => {
         console.error('Error:', error)
       });
-      
-    //api gives results for every hour when query is shorter than 90 days, picking data for once per day
+
+    //api gives results for every hour when query is shorter than 90 days and starting later than 2018-5-24, picking data for once per day
     if (this.json) {
-      if (datesUnix[1] - datesUnix[0] < 7776000) {
+      if (datesUnix[1] - datesUnix[0] < 7776000 && datesUnix[0] > 1527187420) {
         this.prices = Array(this.json.prices[0])
         this.total_volumes = Array(this.json.total_volumes[0])
         for (let i = 24; i < this.json.prices.length; i += 24) {

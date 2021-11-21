@@ -12,7 +12,7 @@ export class DatePickerComponent implements OnInit {
 
   form: FormGroup;
 
-  minDate = new Date(2013, 3, 17);
+  minDate = new Date(2013, 3, 29);
   maxDate = new Date();
   @Output() btnClick = new EventEmitter();
   cssClass = '/date-picker.component.css'
