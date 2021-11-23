@@ -2,6 +2,13 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.0.2.
 
+## What does it do?
+
+It finds next information about bitcoin in selected date range
+1. Longest bearish streak of dates
+2. Highest volume of single trading day during the period and volume in euros on that date
+3. Pair of dates that most profit could be achieved during that period 
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
