@@ -2,6 +2,10 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.0.2.
 
+## How can I use it?
+
+build version of project can be found in https://jemppu.github.io/vincit_pre_assignment/
+
 ## What does it do?
 
 It finds next information about bitcoin in selected date range
