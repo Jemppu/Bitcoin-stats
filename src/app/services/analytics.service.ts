@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { DatesToUnixService } from './dates-to-unix.service';
+import { FetchDataService } from './fetch-data.service';
 
 
 
@@ -21,23 +23,10 @@ export class AnalyticsService {
   prices: Array<Array<number>>;
   total_volumes: Array<Array<number>>;
 
-  constructor() { }
+  constructor(private dataFetcher: FetchDataService,
+    private dateService: DatesToUnixService) { }
 
-  //simple method that retuns given array of dates as unix timestamps
-  datesToUnix(dates: Array<Date>) {
-    let datesUnix = [];
-    for (var date of dates) {
-      datesUnix.push(date.getTime() / 1000);
-    }
-    datesUnix[1] += 10800;
-    return datesUnix
-  }
 
-  //fetch the json from api for given dates
-  getJson = async (datesUnix: Array<number>) => {
-    let url: string = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=${datesUnix[0]}&to=${datesUnix[1]}`;
-    return await window.fetch(url)
-  }
 
   //method that returns the length of the longest bearish streak of the given dates
   longestBearish(prices: Array<Array<number>>) {
@@ -102,9 +91,9 @@ export class AnalyticsService {
   //method calls other methods of this service to find requested info from the dates. Returns array of strings of the requested info.
   analyzeDates = async (dates: Array<Date>) => {
 
-    let datesUnix: Array<number> = this.datesToUnix(dates);
+    let datesUnix: Array<number> = this.dateService.datesToUnix(dates);
 
-    await this.getJson(datesUnix)
+    await this.dataFetcher.getJson(datesUnix)
       .then(response => response.json())
       .then(data => this.json = data)
       .catch((error) => {
