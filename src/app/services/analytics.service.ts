@@ -17,11 +17,14 @@ interface MarketChart {
 export class AnalyticsService {
 
   json: MarketChart;
-  longestDecrease: String = "";
-  highestVolumeData: Array<String> = ["", ""];
-  profitDates: Array<String> = ["", ""];
+  longestDecrease: string = "";
+  highestVolumeData: Array<string> = ["", ""];
+  profitDates: Array<string> = ["", ""];
   prices: Array<Array<number>>;
   total_volumes: Array<Array<number>>;
+  threeMonthsUnix: number = 7776000;
+  apiChangeUnix: number = 1527187420;
+
 
   constructor(private dataFetcher: FetchDataService,
     private dateService: DatesToUnixService) { }
@@ -92,6 +95,7 @@ export class AnalyticsService {
   analyzeDates = async (dates: Array<Date>) => {
 
     let datesUnix: Array<number> = this.dateService.datesToUnix(dates);
+    let dataMap = new Map<string, string>();
 
     await this.dataFetcher.getJson(datesUnix)
       .then(response => response.json())
@@ -102,7 +106,7 @@ export class AnalyticsService {
 
     //api gives results for every hour when query is shorter than 90 days and starting later than 2018-5-24, picking data for once per day
     if (this.json) {
-      if (datesUnix[1] - datesUnix[0] < 7776000 && datesUnix[0] > 1527187420) {
+      if (datesUnix[1] - datesUnix[0] < this.threeMonthsUnix && datesUnix[0] > this.apiChangeUnix) {
         this.prices = Array(this.json.prices[0])
         this.total_volumes = Array(this.json.total_volumes[0])
         for (let i = 24; i < this.json.prices.length; i += 24) {
@@ -115,15 +119,19 @@ export class AnalyticsService {
         this.prices = this.json.prices;
         this.total_volumes = this.json.total_volumes;
       }
-      this.longestDecrease = this.longestBearish(this.prices);
+      dataMap.set("longestDecrease", this.longestBearish(this.prices));
       this.highestVolumeData = this.highestVolume(this.total_volumes);
       this.profitDates = this.maximumProfit(this.prices);
+      dataMap.set("highestVolume", this.highestVolumeData[0])
+      dataMap.set("highestVolumeTime", this.highestVolumeData[1])
+      dataMap.set("highestProfitStart", this.profitDates[0])
+      dataMap.set("highestProfitEnd", this.profitDates[1])
     }
     //no json found, so there was something wrong in fetching. Sets first string in return to show there was an error.
     else {
-      this.longestDecrease = "data not found"
+      dataMap.set("longestDecrease", "data not found")
     }
-    return [this.longestDecrease, this.highestVolumeData[0], this.highestVolumeData[1], this.profitDates[0], this.profitDates[1]];
+    return dataMap;
 
   }
 }
